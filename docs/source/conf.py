@@ -1,23 +1,35 @@
 # Configuration file for the Sphinx documentation builder.
+import tomli
 
 # -- Project information
+def _get_project_meta() -> dict[str, str]:  # lying abour return type
+    with open('../../pyproject.toml', mode='rb') as pyproject:
+        return tomli.load(pyproject)['tool']['poetry']
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
 
-release = '0.1'
-version = '0.1.0'
+pkg_meta = _get_project_meta()
+project = pkg_meta['name']
+author = pkg_meta['authors'][0]
+copyright = author  # noqa: WPS125
+
+# The short X.Y version
+version = pkg_meta['version']
+# The full version, including alpha/beta/rc tags
+release = version
 
 # -- General configuration
 
 extensions = [
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autodoc',
+    'autoapi.extension',
 ]
+
+autodoc_typehints = 'description'
+autoapi_dirs = ['../../src']
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
@@ -29,7 +41,7 @@ templates_path = ['_templates']
 
 # -- Options for HTML output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
